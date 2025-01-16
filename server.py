@@ -84,7 +84,7 @@ class RequestHandler(BaseHTTPRequestHandler):
                     "data": {
                         "title": title, # notification title
                         "message": message, # notification msg
-                        "timestamp": timestamp, # event's local timestamp
+                        "timestamp": str(timestamp), # event's local timestamp
                         "status": str(status) # true if alarm is on
                     },
                     "token": token # user
