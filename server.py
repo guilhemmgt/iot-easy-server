@@ -144,6 +144,7 @@ class RequestHandler(BaseHTTPRequestHandler):
             match message:
                 # Arduino
                 case "alarm_is_on":
+                    self.must_turn_alarm_off[key] = False
                     self.send_fcm(key, "Alarme déclenchée !", f"Activée à {datetime.fromtimestamp(int(timestamp)).strftime('%Y-%m-%d %H:%M:%S')}.", timestamp, True)
                     self.send_response(200)
                     self.end_headers()
