@@ -41,8 +41,6 @@ class RequestHandler(BaseHTTPRequestHandler):
             users[d["key"]] = [t for t in d["tokens"]]
 
     must_turn_alarm_off = {key:False for key in users} # true if the app ordered to turn the alarm off
-    block_fcm = {key:False for key in users} # true if FCM messages are blocked
-
 
     '''
     Responds to request with an error
@@ -70,12 +68,6 @@ class RequestHandler(BaseHTTPRequestHandler):
         
         # Update the access_token
         self.fcm_headers["Authorization"] = f"Bearer {access_token}"
-
-        
-        # HACK
-        if self.block_fcm[key]:
-            logging.info(f"FCM: simulated sending to {key}: {title} {message} {timestamp} {status}")
-            return
         
         # Send FCM to each user of this key
         for token in self.users[key]:
@@ -176,15 +168,6 @@ class RequestHandler(BaseHTTPRequestHandler):
                     self.send_response(200)
                     self.end_headers()
                     logging.info(f"OK.")
-                # Testing
-                case "toggle_fcm":
-                    self.block_fcm[key] = not self.block_fcm[key]
-                    self.log(f"FCM is {'enabled' if not self.block_fcm[key] else 'disabled'}.")
-                    self.send_response(200)
-                    self.end_headers()
-                    response = {"message": f"FCM is {'enabled' if not self.block_fcm[key] else 'disabled'}."}
-                    self.wfile.write(json.dumps(response).encode("utf-8"))
-                    logging.info(f"OK. (FCM is {'enabled' if not self.block_fcm[key] else 'disabled'})")
                 # default
                 case _:
                     self.respond_error(400, "Bad request (incorrect message).")
